@@ -378,4 +378,4 @@ end
 We did it! Run the test suite and you should see that all of the tests are
 passing.
 
-<p class='util--hide'>View <a href='https://learn.co/lessons/scraping-kickstarter'>Kickstarter Scraping Lab</a> on Learn.co and start learning to code for free.</p>
+
