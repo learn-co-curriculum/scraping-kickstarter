@@ -36,17 +36,20 @@ These individual project hashes will be collected into a larger hash called
 ## Fixtures
 
 In the directory of this project, you'll notice a folder called `fixtures`.
-Inside that folder, you'll see a file, `kickstarter.html`. If you are using the
-Learn IDE right click on the `kickstarter.html` file and select `Show in
-Finder`. Once Finder opens double click `kickstarter.html` to view the file
-inside your default web browser. If you are not using the Learn IDE, try open
-`kickstarter.html` inside your text editor and right-click anywhere on the page
-to select `open in browser` from the menu that appears.
+Inside that folder, you'll see a file, `kickstarter.html`. You can view this in
+the browser by running one of the following commands in your terminal:
 
-**NOTE**: If the `Show in Finder` or `Open in Browser` options are not available
-for you, you can use `httpserver`. Open the `fixtures/kickstarter.html` file
-inside of the browser by typing `httpserver` into the Learn IDE terminal and go
-to the link provided. Navigate to `fixtures/kickstarter.html` from there.
+For **MacOS**:
+
+```console
+$ open fixtures/kickstarter.html
+```
+
+For **WSL**:
+
+```console
+$ explorer.exe fixtures/kickstarter.html
+```
 
 Ta-da! We're looking at a web page. For the purposes of this lab, we won't be
 scraping a live web page. We'll be scraping this HTML page. We're doing this for
@@ -65,13 +68,14 @@ Since we'll be using that `kickstarter.html` file instead of an Open-URI
 request, we need to require only `nokogiri` at the top of the
 `kickstarter_scraper.rb` file
 
-Next, let's set up some variables inside the method called `create_project_hash`:
+Next, let's set up some variables inside the method called
+`create_project_hash`:
 
 ```ruby
 # This just opens a file and reads it into a variable
 html = File.read('fixtures/kickstarter.html')
 
-kickstarter = Nokogiri::HTML(html)
+kickstarter = Nokogiri.HTML(html)
 ```
 
 Notice that this is pretty similar to what we did to open HTML documents in the
@@ -80,13 +84,20 @@ previous exercise in which we did use Open-URI.
 ### Selecting the Projects
 
 The first thing we'll want to do is figure out what selector will allow us to
-grab each project as a whole. Open up `fixtures/kickstarter.html` by typing:
+grab each project as a whole. If you don't already have it open, view
+`fixtures/kickstarter.html` in the browser by typing:
 
-```bash
-open fixtures/kickstarter.html
+For **MacOS**:
+
+```console
+$ open fixtures/kickstarter.html
 ```
 
-in the terminal, or by right clicking on the file and selecting "open in browser".
+For **WSL**:
+
+```console
+$ explorer.exe fixtures/kickstarter.html
+```
 
 This should open the file in your web browser. Right click somewhere on the
 "Moby Dick" project and choose "Inspect Element". By moving your mouse up and
@@ -107,12 +118,12 @@ file, and add `binding.pry` after the last line. Add a call to the
 `create_project_hash` method at the bottom of the file.
 
 ```ruby
-require "nokogiri"
-require "pry"
+require 'nokogiri'
+require 'pry'
 
 def create_project_hash
   html = File.read('fixtures/kickstarter.html')
-  kickstarter = Nokogiri::HTML(html)
+  kickstarter = Nokogiri.HTML(html)
   binding.pry
 end
 
@@ -125,7 +136,7 @@ into Pry, so that we can play around.
 In pry, type in:
 
 ```ruby
-kickstarter.css("li.project.grid_4").first
+kickstarter.css('li.project.grid_4').first
 ```
 
 This will select the first `li` with the `project` and `grid_4` classes just so
@@ -155,9 +166,10 @@ project = _
 This will assign that project to a variable, `project` so that we can play
 around with it.
 
-**Reminder:** If you're looking at a big chunk of code in Pry that gets cut off at the bottom
-of your terminal window, you can scroll down with the down arrow key. You can
-escape the scrolling and go back to entering code in Pry by hitting "q".
+**Reminder:** If you're looking at a big chunk of code in Pry that gets cut off
+at the bottom of your terminal window, you can scroll down with the down arrow
+key. You can escape the scrolling and go back to entering code in Pry by hitting
+"q".
 
 **Top-Tip:** The `variable_name = _` syntax used in Pry will assign the
 `variable` name to the return value of whatever was executed above. For example:
@@ -176,13 +188,14 @@ that the title of each project lives in an `h2` with a class of `bbcard_name`,
 inside a `strong` and then an `a` tag. Let's check that in pry:
 
 ```ruby
-project.css("h2.bbcard_name strong a").text
+project.css('h2.bbcard_name strong a').text
 ```
 
 Since Nokogiri gives us a bunch of nested nodes that all respond to the same
 methods, we can just chain a `css` method right onto this `project`. Neat, huh?
 
-Now that we have our `title` selector, let's add it into a comment in our `kickstarter_scraper.rb`.
+Now that we have our `title` selector, let's add it into a comment in our
+`kickstarter_scraper.rb`.
 
 ```ruby
 # projects: kickstarter.css("li.project.grid_4")
@@ -198,7 +211,7 @@ Pry.
 In Pry, type:
 
 ```ruby
-project.css("div.project-thumbnail a img").attribute("src").value
+project.css('div.project-thumbnail a img').attribute('src').value
 ```
 
 It worked! Now, let's continue to keep track of our working code in our project
@@ -228,7 +241,7 @@ inspector, take a stab at a CSS selector in Pry, and then keep track of that
 selector in our project file. Let's grab the description now. In Pry:
 
 ```ruby
-project.css("p.bbcard_blurb").text
+project.css('p.bbcard_blurb').text
 ```
 
 This should return the description of an individual project.
@@ -255,7 +268,7 @@ in Chrome, it seems that this one is just a bit trickier, but only because it's
 more nested than the other ones. In Pry, type:
 
 ```ruby
-project.css("ul.project-stats li.first.funded strong").text
+project.css('ul.project-stats li.first.funded strong').text
 ```
 
 That does it! To make it useful for later on if, say, we wanted to do some math,
@@ -297,14 +310,12 @@ require 'pry'
 
 def create_project_hash
   html = File.read('fixtures/kickstarter.html')
-  kickstarter = Nokogiri::HTML(html)
+  kickstarter = Nokogiri.HTML(html)
 
   projects = {}
 
   # Iterate through the projects
-  kickstarter.css("li.project.grid_4").each do |project|
-    projects[project] = {}
-  end
+  kickstarter.css('li.project.grid_4').each { |project| projects[project] = {} }
 
   # return the projects hash
   projects
@@ -319,15 +330,15 @@ with each of our other data points as keys. Sound good?
 ```ruby
 # file: kickstarter_scraper.rb
 
-...
-
-def create_project_hash
+...def create_project_hash
   projects = {}
 
-  kickstarter.css("li.project.grid_4").each do |project|
-    title = project.css("h2.bbcard_name strong a").text
-    projects[title.to_sym] = {}
-  end
+  kickstarter
+    .css('li.project.grid_4')
+    .each do |project|
+      title = project.css('h2.bbcard_name strong a').text
+      projects[title.to_sym] = {}
+    end
 
   # return the projects hash
   projects
@@ -356,19 +367,27 @@ require 'pry'
 
 def create_project_hash
   html = File.read('fixtures/kickstarter.html')
-  kickstarter = Nokogiri::HTML(html)
+  kickstarter = Nokogiri.HTML(html)
 
   projects = {}
 
-  kickstarter.css("li.project.grid_4").each do |project|
-    title = project.css("h2.bbcard_name strong a").text
-    projects[title.to_sym] = {
-      :image_link => project.css("div.project-thumbnail a img").attribute("src").value,
-      :description => project.css("p.bbcard_blurb").text,
-      :location => project.css("ul.project-meta span.location-name").text,
-      :percent_funded => project.css("ul.project-stats li.first.funded strong").text.gsub("%","").to_i
-    }
-  end
+  kickstarter
+    .css('li.project.grid_4')
+    .each do |project|
+      title = project.css('h2.bbcard_name strong a').text
+      projects[title.to_sym] = {
+        image_link:
+          project.css('div.project-thumbnail a img').attribute('src').value,
+        description: project.css('p.bbcard_blurb').text,
+        location: project.css('ul.project-meta span.location-name').text,
+        percent_funded:
+          project
+            .css('ul.project-stats li.first.funded strong')
+            .text
+            .gsub('%', '')
+            .to_i,
+      }
+    end
 
   # return the projects hash
   projects
@@ -377,5 +396,3 @@ end
 
 We did it! Run the test suite and you should see that all of the tests are
 passing.
-
-
